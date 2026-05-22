@@ -1,0 +1,20 @@
+{
+  "name": "IIDZII POS",
+  "short_name": "IIDZII POS",
+  "description": "IIDZII POS - نظام إدارة المبيعات الذكي",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a0f1a",
+  "theme_color": "#3b82f6",
+  "orientation": "any",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.png", "sizes": "192x192", "type": "image/png" }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "shortcuts": [
+    { "name": "المبيعات", "short_name": "POS", "url": "./?tab=pos", "icons": [{ "src": "icon.png", "sizes": "96x96" }] }
+  ]
+}

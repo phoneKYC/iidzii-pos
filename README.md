@@ -6,7 +6,7 @@
 
 **نظام نقاط بيع ذكي متكامل — يعمل على المتصفح مباشرة**
 
-[![Deploy to GitHub Pages](https://github.com/imadIIDZII/iidzii-pos/actions/workflows/deploy.yml/badge.svg)](https://github.com/imadIIDZII/iidzii-pos/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/phonekyc/iidzii-pos/actions/workflows/deploy.yml/badge.svg)](https://github.com/imadIIDZII/iidzii-pos/actions/workflows/deploy.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 </div>

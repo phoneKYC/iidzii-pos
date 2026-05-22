@@ -180,7 +180,7 @@ export const Login: React.FC<LoginProps> = ({ users, onLogin, initialLanguage = 
     <div className="w-full h-px bg-white/5"></div>
 
     <a
-    href="https://github.com/SalehGNUTUX"
+    href="https://github.com/imadIIDZII"
     target="_blank"
     rel="noopener noreferrer"
     className="flex flex-col items-center gap-2 group"
@@ -190,13 +190,15 @@ export const Login: React.FC<LoginProps> = ({ users, onLogin, initialLanguage = 
     </p>
     <div className="flex items-center gap-3 text-white transition-all group-hover:text-primary">
     <Github size={20} />
-    <span className="text-lg font-black tracking-tight">SalehGNUTUX</span>
+    <span className="text-lg font-black tracking-tight">imad IIDZII</span>
     </div>
     <div className="flex items-center gap-1 text-[9px] text-primary font-bold opacity-60 group-hover:opacity-100 transition-opacity">
     <Globe size={10} />
-    <span>github.com/SalehGNUTUX</span>
+    <span>github.com/imadIIDZII</span>
     </div>
     </a>
+
+    <p className="text-[9px] text-gray-600 font-medium">مع شكر خاص لـ <a href="https://github.com/SalehGNUTUX" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SalahGnutox</a></p>
     </div>
     </div>
 

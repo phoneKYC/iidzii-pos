@@ -124,6 +124,7 @@ export const POS: React.FC<POSProps> = ({
   const [cardType, setCardType]                   = useState('');
   const [cardExpiry, setCardExpiry]               = useState('');
   const [hoveredCostId, setHoveredCostId]         = useState<string | null>(null);
+  const [showCostId, setShowCostId]               = useState<string | null>(null);
 
   const receiptRef = useRef<HTMLDivElement>(null);
   const searchRef  = useRef<HTMLInputElement>(null);
@@ -225,12 +226,11 @@ export const POS: React.FC<POSProps> = ({
   const { subtotal, discountAmount, total } = useMemo(() => {
     const sub = cart.reduce((a, i) => {
       const itemTotal = i.price * i.quantity;
-      const disc = i.itemDiscount || 0;
-      const discAmt = disc > 0 ? (disc <= 100 ? itemTotal * (disc / 100) : disc) : 0;
+      const discAmt = Math.max(0, i.itemDiscount || 0);
       return a + itemTotal - discAmt;
     }, 0);
     const dv  = parseFloat(discount || '0');
-    const da  = dv > 0 ? (dv <= 100 ? sub * (dv / 100) : dv) : 0;
+    const da  = Math.max(0, isNaN(dv) ? 0 : dv);
     return { subtotal: sub, discountAmount: da, total: Math.max(0, sub - da) };
   }, [cart, discount]);
 
@@ -347,10 +347,9 @@ export const POS: React.FC<POSProps> = ({
     // جدول المنتجات — حراري و A4/A5: 4 أعمدة (الصنف، الكمية، سعر الوحدة، المجموع)
     const itemsRows = pendingSale.items.map(item => {
       const itemTotal = item.price * item.quantity;
-      const disc = item.itemDiscount || 0;
-      const discAmt = disc > 0 ? (disc <= 100 ? itemTotal * (disc / 100) : disc) : 0;
+      const discAmt = Math.max(0, item.itemDiscount || 0);
       const net = itemTotal - discAmt;
-      const discLabel = disc > 0 ? (disc <= 100 ? `-${disc}%` : `-${disc.toFixed(2)}`) : '';
+      const discLabel = discAmt > 0 ? `-${discAmt.toFixed(2)}` : '';
       const tot = net.toFixed(2);
       return isThermal
         ? `<tr><td>${truncate(item.name, is58?10:16)}${discLabel?`<br><span style="color:#dc2626;font-size:${is58?'6px':'7px'}">${discLabel}</span>`:''}</td><td style="text-align:center">${item.quantity}</td><td style="text-align:center;font-size:${is58?'7px':'8px'}">${item.price.toFixed(2)}</td><td style="text-align:left">${tot}</td></tr>`
@@ -509,7 +508,7 @@ ${isThermal ? thermalBody : a4a5Body}
     return true;
   };
 
-  const finalizeSale = async (action: 'print' | 'save' | 'both') => {
+  const finalizeSale = async (action: 'print' | 'save' | 'both' | 'done') => {
     if (!pendingSale || isProcessing) return;
     setIsProcessing(true); setLocalError('');
     try {
@@ -530,8 +529,7 @@ ${isThermal ? thermalBody : a4a5Body}
   const renderCartItem = (item: CartItem, compact = false) => {
     const ck = item.cartKey || item.id;
     const itemTotal = item.price * item.quantity;
-    const disc = item.itemDiscount || 0;
-    const discAmt = disc > 0 ? (disc <= 100 ? itemTotal * (disc / 100) : disc) : 0;
+    const discAmt = Math.max(0, item.itemDiscount || 0);
     const net = itemTotal - discAmt;
 
     return (
@@ -560,36 +558,31 @@ ${isThermal ? thermalBody : a4a5Body}
             {/* Per-item discount input */}
             <input
               type="number"
-              value={disc > 0 ? disc : ''}
+              value={discAmt > 0 ? discAmt : ''}
               onChange={e => updateItemDiscount(ck, e.target.value)}
               placeholder={t.discount || 'خصم'}
-              className={`w-12 text-[9px] px-1 py-0.5 border rounded-lg focus:outline-none dark:bg-gray-800 dark:text-white text-center ${disc > 0 ? 'border-red-400 text-red-500' : 'border-gray-200 dark:border-gray-700'}`}
+              className={`w-12 text-[9px] px-1 py-0.5 border rounded-lg focus:outline-none dark:bg-gray-800 dark:text-white text-center ${discAmt > 0 ? 'border-red-400 text-red-500' : 'border-gray-200 dark:border-gray-700'}`}
               min="0"
-              title="خصم لكل منتج (نسبة ≤100 أو مبلغ >100)"
+              title="خصم مباشر بالمبلغ"
             />
-            {disc > 0 && (
-              <span className="text-[8px] text-red-500 font-black">
-                -{discAmt.toFixed(0)}
-              </span>
-            )}
-            {/* Purchase price icon (desktop only) */}
-            {!compact && (
-              <div
-                className="relative"
-                onMouseEnter={() => setHoveredCostId(ck)}
-                onMouseLeave={() => setHoveredCostId(null)}
+            {/* Purchase price — desktop: hover + click, mobile: click */}
+            <div className="relative">
+              <button
+                className="text-gray-300 hover:text-amber-500 transition-colors flex-shrink-0"
+                title="سعر الشراء"
+                onClick={() => setShowCostId(showCostId === ck ? null : ck)}
+                onMouseEnter={() => !compact && setHoveredCostId(ck)}
+                onMouseLeave={() => !compact && setHoveredCostId(null)}
               >
-                <button className="text-gray-300 hover:text-amber-500 transition-colors flex-shrink-0" title="سعر الشراء">
-                  <Eye size={10} />
-                </button>
-                {hoveredCostId === ck && item.cost != null && (
-                  <div className="absolute bottom-full mb-2 z-50 bg-gray-800 text-white text-[10px] rounded-lg px-2 py-1 shadow-2xl pointer-events-none whitespace-nowrap">
-                    سعر الشراء: {item.cost} {cur}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45 -mt-1"></div>
-                  </div>
-                )}
-              </div>
-            )}
+                <Eye size={10} />
+              </button>
+              {(hoveredCostId === ck || showCostId === ck) && item.cost != null && (
+                <div className="absolute bottom-full mb-2 z-50 bg-gray-800 text-white text-[10px] rounded-lg px-2 py-1 shadow-2xl pointer-events-none whitespace-nowrap">
+                  سعر الشراء: {item.cost} {cur}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45 -mt-1"></div>
+                </div>
+              )}
+            </div>
             {(currentUser.role === 'admin' || (settings as any).allowEmployeeCartPriceEdit) && (settings as any).allowCartPriceEdit && editingCartKey !== ck && (
               <button onClick={() => { setEditingCartKey(ck); setEditingPriceValue(item.price.toString()); }}
                 className="text-gray-300 hover:text-primary transition-colors" title="تعديل السعر">
@@ -697,7 +690,7 @@ ${isThermal ? thermalBody : a4a5Body}
         <div className="p-4 border-t border-gray-100 dark:border-white/5 space-y-3">
           <div className="flex gap-2 items-center">
             <span className="text-xs text-gray-500 font-bold flex-shrink-0">{t.discount || 'خصم'}:</span>
-            <input type="number" value={discount} onChange={e => setDiscount(e.target.value)} placeholder="0 أو %"
+            <input type="number" value={discount} onChange={e => setDiscount(e.target.value)} placeholder="0"
               className="flex-1 py-1.5 px-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-xs outline-none border border-gray-100 dark:border-transparent dark:text-white" min="0" />
           </div>
           {discountAmount > 0 && (
@@ -841,7 +834,7 @@ ${isThermal ? thermalBody : a4a5Body}
               :cart.map(item => renderCartItem(item, true))}
           </div>
           <div className="p-4 border-t border-gray-100 dark:border-white/5 space-y-2.5">
-            <div className="flex gap-2 items-center"><span className="text-xs text-gray-500 font-bold flex-shrink-0">{t.discount||'خصم'}:</span><input type="number" value={discount} onChange={e=>setDiscount(e.target.value)} placeholder="0 أو %" className="flex-1 py-1.5 px-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-xs outline-none border border-gray-100 dark:border-transparent dark:text-white" min="0"/></div>
+            <div className="flex gap-2 items-center"><span className="text-xs text-gray-500 font-bold flex-shrink-0">{t.discount||'خصم'}:</span><input type="number" value={discount} onChange={e=>setDiscount(e.target.value)} placeholder="0" className="flex-1 py-1.5 px-3 bg-gray-50 dark:bg-gray-900 rounded-xl text-xs outline-none border border-gray-100 dark:border-transparent dark:text-white" min="0"/></div>
             {discountAmount>0&&<div className="flex justify-between text-xs text-gray-500"><span>{t.discount||'خصم'}:</span><span className="text-red-500 font-bold">-{discountAmount.toFixed(2)} {cur}</span></div>}
             <div className="flex justify-between items-center"><span className="text-gray-400 font-black text-xs">{t.total||'الإجمالي'}:</span><span className="text-primary font-black text-xl">{total.toFixed(2)} {cur}</span></div>
             <button onClick={()=>setIsCheckoutOpen(true)} disabled={cart.length===0} className="w-full bg-primary text-white font-black py-3.5 rounded-2xl shadow-xl disabled:opacity-50 active:scale-95 transition-all text-sm">{t.checkout||'متابعة الدفع'}</button>
@@ -1084,14 +1077,13 @@ ${isThermal ? thermalBody : a4a5Body}
                   <tbody>
                     {pendingSale.items.map((item, i) => {
                       const itemTotal = item.price * item.quantity;
-                      const disc = item.itemDiscount || 0;
-                      const discAmt = disc > 0 ? (disc <= 100 ? itemTotal * (disc / 100) : disc) : 0;
+                      const discAmt = Math.max(0, item.itemDiscount || 0);
                       const net = itemTotal - discAmt;
                       return (
                       <tr key={i} className="border-b border-dashed border-gray-100">
                         <td className="py-1 px-1 font-bold">
                           {truncate(item.name, isTh?(sz==='thermal58'?10:14):30)}
-                          {disc > 0 && <div className="text-[7px] text-red-500">{disc <= 100 ? `-${disc}%` : `-${disc.toFixed(0)}`}</div>}
+                          {discAmt > 0 && <div className="text-[7px] text-red-500">-{discAmt.toFixed(0)}</div>}
                         </td>
                         <td className="py-1 px-1 text-center">{item.quantity}</td>
                         <td className="py-1 px-1 text-center">{item.price.toFixed(2)}</td>
@@ -1153,6 +1145,10 @@ ${isThermal ? thermalBody : a4a5Body}
               <button onClick={() => finalizeSale('both')} disabled={isProcessing}
                 className="w-full bg-purple-500 text-white py-3 rounded-xl font-black text-sm active:scale-95 disabled:opacity-50">
                 🖨️ {t.print_and_save||'طباعة وحفظ'}
+              </button>
+              <button onClick={() => finalizeSale('done')} disabled={isProcessing}
+                className="w-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-white py-3 rounded-xl font-black text-sm active:scale-95 disabled:opacity-50 border border-gray-300 dark:border-gray-600">
+                ✅ حفظ فقط (بدون طباعة)
               </button>
             </div>
           </div>

@@ -77,10 +77,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
 
         {/* Footer */}
         <div className="p-2 border-t border-gray-100 dark:border-white/5 hidden lg:block">
-          <a href="#" onClick={(e) => { e.preventDefault(); openExternalLink("https://github.com/SalehGNUTUX"); }}
+          <a href="#" onClick={(e) => { e.preventDefault(); openExternalLink("https://github.com/imadIIDZII"); }}
             className="flex items-center justify-center gap-1.5 text-gray-400 hover:text-primary transition-colors py-1">
             <Heart size={10} className="text-red-400 fill-red-400" />
-            <span className="text-[9px] font-bold">SalehGNUTUX</span>
+            <span className="text-[9px] font-bold">imad IIDZII</span>
             <Github size={10} />
           </a>
           <p className="text-[9px] text-gray-400 text-center font-bold">v2.9.5-beta</p>
@@ -170,10 +170,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTa
             </nav>
 
             <div className="p-4 border-t border-gray-100 dark:border-white/5 text-center">
-              <a href="#" onClick={(e) => { e.preventDefault(); openExternalLink("https://github.com/SalehGNUTUX"); }}
+              <a href="#" onClick={(e) => { e.preventDefault(); openExternalLink("https://github.com/imadIIDZII"); }}
                 className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
                 <Heart size={10} className="text-red-400 fill-red-400" />
-                <span>SalehGNUTUX</span>
+                <span>imad IIDZII</span>
                 <Github size={10} />
               </a>
               <p className="text-[9px] text-gray-400 font-bold mt-1">IIDZII POS v2.9.5-beta</p>

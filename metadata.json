@@ -1,0 +1,7 @@
+{
+  "name": "IIDZII POS - نظام إدارة المبيعات الذكي",
+  "description": "A comprehensive Point of Sale system with inventory management, analytics, and thermal printing support, optimized for Arabic and multi-language use.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

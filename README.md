@@ -76,7 +76,7 @@
 1. **انسخ المستودع** (Fork) أو أنشئ مستودعاً جديداً وارفع الملفات:
 
 ```bash
-git clone https://github.com/imadIIDZII/iidzii-pos.git
+git clone https://github.com/phonekyc/iidzii-pos.git
 cd iidzii-pos
 ```
 
@@ -112,7 +112,7 @@ npm run deploy
 
 ```bash
 # استنساخ المشروع
-git clone https://github.com/imadIIDZII/iidzii-pos.git
+git clone https://github.com/phonekyc/iidzii-pos.git
 cd iidzii-pos
 
 # تثبيت التبعيات
@@ -224,6 +224,4 @@ iidzii-pos/
 
 <div align="center">
 
-**تطوير [imad IIDZII](https://github.com/imadIIDZII)**
-
-</div>
+**تطوير [imad IIDZII](https://github.com/phonekyc</div>
